@@ -3,10 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
 *.so
 
-# Distribution / packaging
 .Python
 env/
 build/
@@ -86,19 +84,8 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
 .mypy_cache/
-
-# other OS files
 .DS_Store
+
+
+./data2
