@@ -1,2 +1,7 @@
 Python 
 PyTorch 
+pandas
+numpy
+matplotlib
+sklearn
+PIL
