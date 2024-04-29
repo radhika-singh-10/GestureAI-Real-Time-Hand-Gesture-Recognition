@@ -9,11 +9,6 @@ from matplotlib import pylab as plt
 from torch.optim.optimizer import Optimizer
 
 
-###############################################################################
-# TRAINING CALLBACKS
-###############################################################################
-
-
 
 class ReduceLROnPlateau(object):
     """Reduce learning rate when a metric has stopped improving.

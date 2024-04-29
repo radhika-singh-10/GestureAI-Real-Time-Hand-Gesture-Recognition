@@ -2,7 +2,7 @@ import os
 import glob
 import numpy as np
 import torch
-
+import logging
 from PIL import Image
 from data_parser import JpegDataset
 from torchvision.transforms import *
@@ -11,115 +11,100 @@ IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG']
 
 
 def default_loader(path):
-    return Image.open(path).convert('RGB')
-
+    try:
+        image = Image.open(path)
+        image = image.convert('RGB')
+        return image
+    except Exception as e:
+        print(f"Error opening or converting image: {e}")
+        return None
 
 class VideoFolder(torch.utils.data.Dataset):
 
-    def __init__(self, root, csv_file_input, csv_file_labels, clip_size,
-                 nclips, step_size, is_val, transform=None,
-                 loader=default_loader):
-        self.dataset_object = JpegDataset(csv_file_input, csv_file_labels, root)
-
+    def __init__(self, root, csv_file, labels, clip_size,nclips, step_size, is_val, transform=None,loader=default_loader):
+        self.dataset_object = JpegDataset(csv_file, labels, root)
         self.csv_data = self.dataset_object.csv_data
         self.classes = self.dataset_object.classes
         self.classes_dict = self.dataset_object.classes_dict
         self.root = root
         self.transform = transform
         self.loader = loader
-
         self.clip_size = clip_size
         self.nclips = nclips
         self.step_size = step_size
         self.is_val = is_val
 
 
-
     def __getitem__(self, index):
-        item = self.csv_data[index]
-        img_paths = self.get_frame_names(item.path)
-        imgs = []
+        try:
+            index = self.csv_data[index]
+            paths = self.get_frames(index.path)
+            images = []
+            for path in paths:
+                try:
+                    image = self.loader(path)
+                    image = self.transform(image)
+                    images.append(torch.unsqueeze(image, 0))
+                except Exception as ex:
+                    logging.warning(f"__getitem__ method's exception {ex} getting in loading the image at path : {path}")
+                    continue
 
-        for img_path in img_paths:
-            try:
-                img = self.loader(img_path)
-                img = self.transform(img)
-                imgs.append(torch.unsqueeze(img, 0))
-            except Exception as e:
-                # Handle the case where no images were loaded
-                # This could involve logging an error, raising an exception, or using a placeholder tensor
-                print(f"Error loading image at path: {img_path}. {e}")
-                # For example, you can log the error and continue with the next image
-                continue
-
-        if len(imgs) == 0:
-            raise RuntimeError("No images were loaded for this data point.")
-
-        target_idx = self.classes_dict[item.label]
-        data = torch.cat(imgs)
-        data = data.permute(1, 0, 2, 3)
-        return data, target_idx
+            if len(images) == 0:
+                raise RuntimeError("There are no images loaded for data at {index}")
+            data = torch.cat(images)
+            data = data.permute(1, 0, 2, 3)
+            index = self.classes_dict[index.label]
+            return data, index
+        except Exception as ex:
+            logging.warning(f' __getitem__ method is giving exception {0}',ex)
 
     def __len__(self):
-        return len(self.csv_data)
+        try: 
+            return len(self.csv_data)
+        except Exception as ex:
+            logging.warning(f'get length method exception : {0}',ex)
 
 
-    def get_frame_names(self, path):
-        frame_names = []
-        for ext in IMG_EXTENSIONS:
-            frame_names.extend(glob.glob(os.path.join(path, "*" + ext)))
-        frame_names = list(sorted(frame_names))
-        num_frames = len(frame_names)
+    def get_frames(self, path):
+        try:
+            frames = []
+            for ext in IMG_EXTENSIONS:
+                frames.extend(glob.glob(os.path.join(path, "*" + ext)))
+            frames = list(sorted(frames))
+            num = len(frames)
 
-        # set number of necessary frames
-        if self.nclips > -1:
-            num_frames_necessary = self.clip_size * self.nclips * self.step_size
-        else:
-            num_frames_necessary = num_frames
-
-        # pick frames
-        offset = 0
-        if num_frames_necessary > num_frames:
-            # pad last frame if video is shorter than necessary
-            if frame_names:
-                frame_names += [frame_names[-1]] * (num_frames_necessary - num_frames)
+            if self.nclips <= -1:
+                frames_necessary = num
             else:
-                # Handle the case where no frames are found.
-                print(f"No frames found in directory: {path}")
-                return []  # Return an empty list or raise an exception as appropriate
-        elif num_frames_necessary < num_frames:
-            # If there are more frames, then sample starting offset
-            diff = (num_frames - num_frames_necessary)
-            # Temporal augmentation
-            if not self.is_val:
-                offset = np.random.randint(0, diff)
+                frames_necessary = self.clip_size * self.nclips * self.step_size
+                
 
-        frame_names = frame_names[offset:num_frames_necessary + offset:self.step_size]
-        return frame_names
+            offset = 0
+            if frames_necessary < num:
+                if not self.is_val:
+                    offset = np.random.randint(0, (num - frames_necessary))
+            elif frames_necessary > num:
+                if frames:
+                    frames += [frames[-1]] * (frames_necessary - num)
+                else:
+                    print(f"No frames found in directory: {path}")
+                    return []  
 
+            frames = frames[offset:frames_necessary + offset:self.step_size]
+            return frames
+        except Exception as ex:
+            logging.warning(f"get_frames method exception {ex}")
 
 
 if __name__ == '__main__':
-    transform = Compose([
-                        CenterCrop(84),
-                        ToTensor(),
-                        # Normalize(
-                        #     mean=[0.485, 0.456, 0.406],
-                        #     std=[0.229, 0.224, 0.225])
-                        ])
+    transform = Compose([CenterCrop(84),ToTensor()])
     loader = VideoFolder(root="/hdd/20bn-datasets/20bn-jester-v1/",
-                         csv_file_input="csv_files/jester-v1-validation.csv",
-                         csv_file_labels="csv_files/jester-v1-labels.csv",
+                         csv_file="csv_files/jester-v1-validation.csv",
+                         labels="csv_files/jester-v1-labels.csv",
                          clip_size=18,
                          nclips=1,
                          step_size=2,
                          is_val=False,
                          transform=transform,
                          loader=default_loader)
-    # data_item, target_idx = loader[0]
-    # save_images_for_debug("input_images", data_item.unsqueeze(0))
-
-    train_loader = torch.utils.data.DataLoader(
-        loader,
-        batch_size=10, shuffle=False,
-        num_workers=5, pin_memory=True)
+    train_loader = torch.utils.data.DataLoader(loader,batch_size=10, shuffle=False, num_workers=5, pin_memory=True)
