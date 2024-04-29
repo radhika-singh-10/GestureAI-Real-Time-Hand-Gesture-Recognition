@@ -1,7 +1,2 @@
-numpy
-pandas
-matplotlib
-torch
-torchsummary
-PIL
-glob
+Python 
+PyTorch 
