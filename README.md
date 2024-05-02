@@ -5,3 +5,5 @@ Our project focuses on gesture recognition, a field within computer vision and h
 
 Requirements.txt
 pip install -r requirements.txt
+
+references are added in comments in the code 
