@@ -1,7 +1,7 @@
-numpy
+Python 
+PyTorch 
 pandas
+numpy
 matplotlib
-torch
-torchsummary
+sklearn
 PIL
-glob
