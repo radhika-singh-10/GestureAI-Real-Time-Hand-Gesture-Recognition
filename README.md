@@ -8,10 +8,10 @@ Our project focuses on gesture recognition, a field within computer vision and h
 
 • Large-scale and Diverse: The Jester dataset contains a large number of videos featuring diverse hand gestures, providing a rich source of data for training and evaluation of gesture recognition algorithms. 
 
-• Real-world Gestures: The gestures captured in the Jester dataset rep- resent common human actions and interactions, making it applicable to a wide range of practical applications. 
+• Real-world Gestures: The gestures captured in the Jester dataset represent common human actions and interactions, making it applicable to a wide range of practical applications. 
 
 
-• Annotated Data: The dataset comes with pre-defined labels for each gesture, that facilitates supervised learning and evaluation of gesture recognition models. 
+• Annotated Data: The dataset comes with pre-defined labels for each gesture, which facilitates supervised learning and evaluation of gesture recognition models. 
 
 
 • Community Benchmark: The availability of the Jester dataset has led to it being widely used as a benchmark for evaluating gesture recognition algorithms, allowing for comparison and advancement of research in the field. By leveraging the Jester dataset, our project aims to develop and evaluate state-of-the-art gesture recognition models that can accurately interpret and classify human gestures in real-time.
@@ -54,6 +54,18 @@ Command to deactivate the Virtual Environment
 deactivate
 ```
 
+
+Steps to train the model
+
+```
+python train.py 
+```
+
+Steps to test the model
+
+```
+python test.py
+```
 References are added in comments in the code for you to refer to, in case of any confusion.
 For further information, please feel free to reach out to any of the contributors -
   <ul>
