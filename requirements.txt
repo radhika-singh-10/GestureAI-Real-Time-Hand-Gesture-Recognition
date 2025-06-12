@@ -1,6 +1,6 @@
-torch 
-pandas
-numpy
-matplotlib
-sklearn
-PIL
+torch==2.2.0
+numpy==2.3.0
+pandas==2.3.0
+matplotlib==3.8.0
+Pillow==10.1.0
+scipy==1.11.3
