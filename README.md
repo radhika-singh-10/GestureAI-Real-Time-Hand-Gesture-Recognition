@@ -1,5 +1,5 @@
 
-# Abstract
+# GestureAI
 
 
 Our project focuses on gesture recognition, a field within computer vision and human-computer interaction that aims to interpret human gestures via Deep Learning. For our study, we have chosen the Jester dataset as it provides a comprehensive collection of hand gesture videos. The Jester dataset is particularly well-suited for our purposes due to the following reasons: 
