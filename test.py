@@ -14,7 +14,7 @@ label_mapping_path = './20bn-jester-v1/annotations/jester-v1-labels-quick-testin
     
 model = GestureDetection(num_classes=7)  
 # https://pytorch.org/docs/stable/generated/torch.load.html
-checkpoint = torch.load('./trainings/jpeg_model/7_classes/v17/checkpoint.pth.tar', map_location='cpu') 
+checkpoint = torch.load('./trainings/jpeg_model/7_classes/v13/checkpoint.pth.tar', map_location='cpu') 
 state_dict = checkpoint['state_dict'] if 'state_dict' in checkpoint else checkpoint
 
 # This code is to load the model trained with multiple GPUs and run it with a single GPU/CPU
