@@ -54,18 +54,30 @@ Command to deactivate the Virtual Environment
 deactivate
 ```
 
+Steps to download the dataset 
+
+1. Go to the website https://www.qualcomm.com/developer/software/jester-dataset/downloads to download the dataset.
+2. Download the 3 tar files
+3. Use the command cat 20bn-jester-v1-?? | tar zx, where ?? is the tar version number
+
+
+Please note that you will need to preprocess the dataset, as we have not provided a preprocessed dataset due to storage constraints on our end. Accordingly you can change the labels in the annotations folder.  [ Go to 20bn-jester-v1/annotations/ folder and change the labels accordingly  ]
+
 
 Steps to train the model
 
 ```
-python train.py 
+python train.py --config ./configs/config.json --eval_only True --resume True --use_gpu True --gpus 0
 ```
 
 Steps to test the model
 
 ```
-python test.py
+python test.py 
 ```
+
+
+
 References are added in comments in the code for you to refer to, in case of any confusion.
 For further information, please feel free to reach out to any of the contributors -
   <ul>
