@@ -1,5 +1,4 @@
-Python 
-PyTorch 
+torch 
 pandas
 numpy
 matplotlib
